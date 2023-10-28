@@ -55,7 +55,6 @@ const Cart: React.FC = () => {
             withCredentials: true,
           });
           setCartItems(response.data.cartItems);
-          console.log(cartItems);
           let productsCount = 0;
           let cartTotalPrice = 0;
 
@@ -65,10 +64,8 @@ const Cart: React.FC = () => {
               cartTotalPrice += product.price * product.quantity; // Increment total price if valid numbers
             }
           }
-          console.log(cartTotalPrice);
           setTotalProducts(productsCount);
           setTotalPrice(cartTotalPrice);
-          console.log(totalPrice);
         } else {
           Alert.alert("You are not authorized to access the Cart.");
         }
@@ -157,7 +154,6 @@ const Cart: React.FC = () => {
       const updatedCart = cartItems.map((item) => {
         if (item.productId === product.productId) {
           item.quantity += 1;
-          console.log("Increased quantity of the product" + item.quantity);
           item.stock -= 1;
           setStock(item.stock);
           setQuantity(item.quantity);
@@ -175,9 +171,7 @@ const Cart: React.FC = () => {
       const updatedCart = cartItems.map((item) => {
         if (item.productId === product.productId) {
           item.quantity -= 1;
-          console.log("Decreased quantity of the product" + item.quantity);
           item.stock += 1;
-          console.log("Changed Stock of the product" + item.stock);
           setStock(item.stock);
           setQuantity(item.quantity);
           setTotalProducts(totalProducts - 1);

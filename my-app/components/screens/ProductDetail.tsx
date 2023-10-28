@@ -57,7 +57,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ route, navigation }) => {
   const baseUrl = `http://localhost:8000/products/${productId}`;
   const { cart, addToCart } = useCart();
   const { stock, setStock } = useStock();
-
   const { user } = useUser();
   useEffect(() => {
     const fetchProduct = async () => {
@@ -65,15 +64,24 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ route, navigation }) => {
         const response = await axios.get(baseUrl);
         const productData = response.data;
 
-        // Set the product data and quantity initially
         setProduct(productData);
         setQuantity(productData.quantity);
 
-        // Set the stock based on quantity
         const initialStock = productData.stock - productData.quantity;
         setStock(initialStock);
-      } catch (error) {
-        console.log(error);
+      } catch (error: any) {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.log(error.request);
+        } else {
+          console.log("Error", error.message);
+        }
+        console.log(error.config);
       }
     };
 

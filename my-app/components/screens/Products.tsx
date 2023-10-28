@@ -99,14 +99,14 @@ const Products: React.FC = React.memo(() => {
               >
                 <View style={styles.productInfo}>
                   <Text style={styles.productName}>{product.title}</Text>
+                  <Text style={styles.productPrice}>
+                    ${product.price.toFixed(2)}
+                  </Text>
                 </View>
                 <Image
                   source={{ uri: product.thumbnail }}
                   style={styles.productThumbnail}
                 />
-                <Text style={styles.productPrice}>
-                  ${product.price.toFixed(2)}
-                </Text>
               </TouchableOpacity>
             ))
           ) : (
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     height: "100%",
     maxHeight: "100%",
     width: "100%",
-    backgroundColor: "#333",
+    backgroundColor: "white",
   },
   container: {
     maxHeight: "90%",
@@ -158,14 +158,13 @@ const styles = StyleSheet.create({
   product: {
     marginBottom: 16,
     padding: 16,
-    backgroundColor: "lightgray",
+    backgroundColor: "white",
     borderRadius: 16,
     flexDirection: "column",
   },
   productInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: "column",
+    alignItems: "flex-start", // Adjust alignment as needed
     marginBottom: 10,
   },
   productName: {
@@ -179,7 +178,7 @@ const styles = StyleSheet.create({
   },
   productThumbnail: {
     width: "100%",
-    height: 200,
+    height: 220,
     borderRadius: 8,
     marginBottom: 10,
     backgroundColor: "lightgrey",
