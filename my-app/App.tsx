@@ -16,6 +16,7 @@ import Welcome from "./components/screens/Home/Welcome";
 import { QuantityProvider } from "./context/QuantityContext";
 import { StockProvider } from "./context/StockContext";
 import CheckOut from "./components/screens/Cart/CheckOut";
+import Payment from "./components/screens/Cart/Payment";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -81,6 +82,7 @@ function Main() {
         options={{ headerShown: false }}
       />
       <Stack.Screen name="CheckOut" component={CheckOut} />
+      <Stack.Screen name="Payment" component={Payment} />
       <Stack.Screen
         name="ProductDetail"
         options={{ headerTitle: "Product", headerShown: false }}

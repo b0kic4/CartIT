@@ -235,10 +235,10 @@ const Cart: React.FC = () => {
 
   return (
     <View style={styles.mainContainer}>
-      <StatusBar style="auto" />
+      <StatusBar style="dark" />
       <View style={styles.headerContainer}>
         <View style={styles.headerContainerForCheckingOut}>
-          <Text style={styles.headerTitle}>Shopping Cart</Text>
+          <Text style={styles.headerTitle}>Your Items</Text>
         </View>
         <View style={styles.containerItemsAndPrice}>
           <View>

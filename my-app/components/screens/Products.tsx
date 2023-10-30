@@ -116,7 +116,7 @@ const Products: React.FC = React.memo(() => {
           )}
         </View>
       </ScrollView>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
     </View>
   );
 });

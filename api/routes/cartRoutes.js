@@ -11,6 +11,7 @@ router.delete(
   verifyToken,
   CartController.removeCartItem
 );
+router.post("/cart/checkout", verifyToken, CartController.cartCheckOut);
 router.delete("/cart/remove", verifyToken, CartController.removeAllCartItems);
 
 module.exports = router;

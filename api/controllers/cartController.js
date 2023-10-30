@@ -1,5 +1,6 @@
 const Cart = require("../schemas/Cart");
-
+const CheckOut = require("../schemas/CheckOut");
+const Product = require("../schemas/Product");
 const CartController = {
   // Adding product to Cart
   addToCart: async (req, res) => {
@@ -106,6 +107,16 @@ const CartController = {
         "cartItems.productId"
       );
       if (userCart) {
+        // Caluculating Total Cart Products and Total Price
+        const totalProducts = userCart.cartItems.length;
+        const totalPrice = userCart.cartItems.reduce(
+          (acc, item) => acc + item.price * item.quantity,
+          0
+        );
+        userCart.totalPrice = totalPrice;
+        userCart.totalCartItems = totalProducts;
+
+        await userCart.save();
         res.json(userCart);
       } else {
         res.status(404).json({ message: "Cart Not Found" });
@@ -114,6 +125,107 @@ const CartController = {
       res.status(500).json({ message: "Internal server error" });
     }
   },
+  cartCheckOut: async (req, res) => {
+    const userId = req.user.id;
+    const { products, paymentInformation, userInformation } = req.body;
+    console.log("Payment information: ", paymentInformation);
+    console.log("User information: ", userInformation);
+
+    try {
+      let userCheckOut = await CheckOut.findOne({ userId });
+
+      if (!userCheckOut) {
+        userCheckOut = new CheckOut({ userId });
+        await userCheckOut.save();
+      }
+
+      for (const product of products) {
+        const { productId, quantity } = product;
+
+        try {
+          const foundProduct = await Cart.findOne({ userId });
+
+          if (foundProduct) {
+            foundProduct.stock -= quantity;
+            await foundProduct.save();
+
+            userCheckOut.orderItems.push({
+              productId: productId,
+              category: product.category,
+              brand: product.brand,
+              title: product.title,
+              description: product.description,
+              quantity: quantity,
+              price: product.price,
+              thumbnail: product.thumbnail,
+              productName: product.productName,
+              productImages: product.productImages,
+            });
+
+            // Adding payment information based on the chosen method
+            if (paymentInformation && paymentInformation.method) {
+              if (!userCheckOut.paymentMethod) {
+                userCheckOut.paymentMethod = {};
+              }
+              userCheckOut.paymentMethod.method = paymentInformation.method;
+
+              if (paymentInformation.method === "card") {
+                // Adding card info for 'card' payments
+                userCheckOut.paymentMethod.cardInfo = {
+                  cardNumber: paymentInformation.cardNumber,
+                  cardHolderName: paymentInformation.cardHolderName,
+                  expirationDate: paymentInformation.expirationDate,
+                  cvv: paymentInformation.cvv,
+                };
+              } else if (paymentInformation.method === "courier") {
+                // Adding user address for 'courier' payments
+                userCheckOut.paymentMethod.userAddress = {
+                  name: userInformation.fullName,
+                  address: userInformation.address,
+                  city: userInformation.city,
+                  country: userInformation.country,
+                  birth: userInformation.birth,
+                };
+              } else {
+                console.error(
+                  `Unknown payment method: ${paymentInformation.method}`
+                );
+              }
+            } else {
+              console.error(
+                `No payment information provided for product ID ${productId}`
+              );
+            }
+          } else {
+            console.error(`Product with ID ${productId} not found.`);
+          }
+        } catch (error) {
+          console.error("Error processing product:", error);
+          return res.status(500).json({ message: "Internal server error" });
+        }
+      }
+
+      userCheckOut.totalPrice = userCheckOut.orderItems.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0
+      );
+      userCheckOut.totalItems = userCheckOut.orderItems.length;
+
+      // Save user cart and checkout
+      const userCart = await Cart.findOne({ userId });
+      if (userCart) {
+        await userCart.save();
+      }
+
+      await userCheckOut.save();
+
+      res.status(200).json({ message: "Checkout successful" });
+    } catch (error) {
+      console.error("Error during checkout:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
   //   Removing single product form Cart
   removeCartItem: async (req, res) => {
     console.log("Item Cart deletion route handler invoked.");
@@ -141,9 +253,6 @@ const CartController = {
 
           // Save the updated cart
           await userCart.save();
-          console.log("Updated User Cart:", userCart);
-          console.log("Product ID after deletion:", productId);
-          console.log("User ID after deletion:", userId);
 
           res.status(200).json({ message: "Item removed from cart" });
         } else {

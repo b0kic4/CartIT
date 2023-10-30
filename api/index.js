@@ -5,19 +5,10 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const port = 8000;
 
-// Schemas
-const User = require("./schemas/User");
-const Product = require("./schemas/Product");
-const Cart = require("./schemas/Cart");
-const CheckOut = require("./schemas/CheckOut");
-
 // Routes
 const authRoutes = require("./routes/authRoutes");
 const productsRoutes = require("./routes/productsRoutes");
 const cartRoutes = require("./routes/cartRoutes");
-const verifyToken = require("./middleware/VerifyToken");
-const bcrypt = require("bcrypt");
-const crypto = require("crypto");
 const cookieParser = require("cookie-parser");
 
 require("dotenv").config();
