@@ -84,7 +84,11 @@ const CheckOut = () => {
           stock: item.stock,
         };
       });
-      navigation.navigate("Payment", { selectedProducts });
+      if (selectedProducts.length > 0) {
+        navigation.navigate("Payment", { selectedProducts });
+      } else {
+        return Alert.alert("No products selected");
+      }
     } catch (error) {
       console.error("Error during checkout:", error);
       // Handle error, show an alert, or perform other actions

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const CartController = require("../controllers/CartController");
+const CartController = require("../controllers/cartController");
 const verifyToken = require("../middleware/VerifyToken");
 
 router.post("/cart/add", verifyToken, CartController.addToCart);

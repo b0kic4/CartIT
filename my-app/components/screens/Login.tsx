@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Switch,
   ImageBackground,
+  Alert,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 
@@ -36,19 +37,18 @@ const Login = () => {
       alert("Login successful");
       navigation.goBack();
     } catch (error: any) {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+      if (error.response && error.response.status === 401) {
+        const errorData = error.response.data;
+        if (errorData.message === "Invalid password") {
+          Alert.alert("Invalid password");
+        }
       } else if (error.request) {
-        // The request was made but no response was received
+        Alert.alert("User not found");
         console.log(error.request);
       } else {
         // Something happened in setting up the request that triggered an error
         console.log("Error", error.message);
       }
-      console.log(error.config);
     }
   }
 

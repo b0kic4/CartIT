@@ -1,6 +1,7 @@
 const Cart = require("../schemas/Cart");
 const CheckOut = require("../schemas/CheckOut");
 const Product = require("../schemas/Product");
+const User = require("../schemas/User");
 const CartController = {
   // Adding product to Cart
   addToCart: async (req, res) => {
@@ -214,11 +215,60 @@ const CartController = {
       // Save user cart and checkout
       const userCart = await Cart.findOne({ userId });
       if (userCart) {
+        userCart.cartItems = [];
         await userCart.save();
       }
+      const user = await User.findById(userId);
 
+      if (user) {
+        // Add order items to purchasedItems in the user schema
+        for (const product of userCheckOut.orderItems) {
+          user.purchasedItems.push({
+            orderId: userCheckOut._id,
+            productId: product.productId,
+            category: product.category,
+            brand: product.brand,
+            title: product.title,
+            description: product.description,
+            quantity: product.quantity,
+            price: product.price,
+            thumbnail: product.thumbnail,
+            productImages: product.productImages,
+            totalItems: userCheckOut.totalItems,
+            totalPrice: userCheckOut.totalPrice,
+            isPaid: true,
+          });
+        }
+
+        // Update orderUserInfo based on paymentInformation
+        if (paymentInformation && paymentInformation.method) {
+          if (paymentInformation.method === "card") {
+            user.orderUserInfo = {
+              name: paymentInformation.cardHolderName,
+              address: userInformation.address,
+              city: userInformation.city,
+              country: userInformation.country,
+            };
+          } else if (paymentInformation.method === "courier") {
+            user.orderUserInfo = {
+              name: userInformation.fullName,
+              address: userInformation.address,
+              city: userInformation.city,
+              country: userInformation.country,
+            };
+          } else {
+            console.error(
+              `Unknown payment method: ${paymentInformation.method}`
+            );
+          }
+        } else {
+          console.error(
+            `No payment information provided for user ID ${userId}`
+          );
+        }
+      }
+      await user.save();
       await userCheckOut.save();
-
       res.status(200).json({ message: "Checkout successful" });
     } catch (error) {
       console.error("Error during checkout:", error);

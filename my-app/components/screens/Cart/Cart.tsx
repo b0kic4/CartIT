@@ -74,7 +74,7 @@ const Cart: React.FC = () => {
       }
     };
     fetchCartProducts();
-  }, [cart]);
+  }, [cart, user]);
 
   const removeItemFromCart = async (productId: number) => {
     const storedToken = await AsyncStorage.getItem("token");
