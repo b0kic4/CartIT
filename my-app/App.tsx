@@ -56,11 +56,7 @@ function Main() {
           options={{ headerShown: true }}
         />
       )}
-      <Stack.Screen
-        name="Profile"
-        component={Profile}
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen
         name="login"
         component={Login}

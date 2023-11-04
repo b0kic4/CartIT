@@ -22,7 +22,7 @@ const Register = async (req, res) => {
 };
 
 const Login = async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, name, email } = req.body;
   const userDoc = await User.findOne({ username });
   if (userDoc) {
     const isMatch = bcrypt.compareSync(password, userDoc.password);
@@ -49,6 +49,8 @@ const Login = async (req, res) => {
             res.json({
               id: userDoc._id,
               username,
+              name,
+              email,
               token,
               message: "Successfully logged in",
             });

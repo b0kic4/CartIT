@@ -11,6 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { useCart } from "../../../context/CartContext";
 
 interface paymentInfo {
   method: string;
@@ -26,11 +27,12 @@ interface userInfo {
   country: string;
   birth: string;
 }
-
+// document.dispatchEvent(new Event("visibilitychange"))
 const Payment = () => {
   const [showCardInput, setShowCardInput] = useState(false);
   const [showCourierInput, setShowCourierInput] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("");
+  const { cart, removeFromCart } = useCart();
   const navigation = useNavigation();
   // Payment details
   const [cardNumber, setCardNumber] = useState("");
@@ -127,11 +129,7 @@ const Payment = () => {
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={goBack}>
-          <Ionicons
-            name="arrow-back-circle"
-            size={42}
-            style={{ marginLeft: 40 }}
-          />
+          <Ionicons name="arrow-back" size={42} style={{ marginLeft: 40 }} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Payment</Text>
       </View>

@@ -100,11 +100,7 @@ const CheckOut = () => {
       <StatusBar style="dark" />
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={goBack}>
-          <Ionicons
-            name="arrow-back-circle"
-            size={42}
-            style={{ marginLeft: 40 }}
-          />
+          <Ionicons name="arrow-back" size={42} style={{ marginLeft: 40 }} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Checkout</Text>
       </View>

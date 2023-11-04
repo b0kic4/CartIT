@@ -203,7 +203,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ route, navigation }) => {
     <View style={styles.mainContainer}>
       <View style={styles.headerContainer}>
         <TouchableOpacity>
-          <Ionicons name="arrow-back-circle" onPress={goBack} size={37} />
+          <Ionicons name="arrow-back" onPress={goBack} size={37} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{product.title}</Text>
       </View>
