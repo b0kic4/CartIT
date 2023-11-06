@@ -133,11 +133,12 @@ const Profile = () => {
     duration?: number | null | undefined;
   }) => {
     try {
-      if (selectedImage && selectedImage.uri && selectedImage.fileName) {
-        const response = await fetch(selectedImage.uri);
-        const blob = await response.blob();
-        const fileUri = selectedImage.uri;
-
+      if (
+        selectedImage &&
+        selectedImage.fileSize &&
+        selectedImage.uri &&
+        selectedImage.fileName
+      ) {
         const getExtensionFromUri = (uri: string) => {
           const uriParts = uri.split(".");
           return uriParts[uriParts.length - 1]; // Extract the file extension
@@ -148,11 +149,17 @@ const Profile = () => {
         const contentType = `image/${
           imageExtension === "jpg" ? "jpeg" : imageExtension
         }`;
+        const fileUri = selectedImage.uri;
+        const response = await fetch(fileUri);
+        const blob = await response.blob();
+        const size = selectedImage.fileSize;
+        const file = new File([blob], selectedImage.fileName, {
+          type: contentType,
+        });
 
         const formData = new FormData();
-        formData.append("fileName", selectedImage.fileName);
-        formData.append("uri", fileUri);
-        formData.append("type", contentType);
+        formData.append("file", file);
+        formData.append("size", size);
         const storedToken = await AsyncStorage.getItem("token");
         const axiosConfig = {
           headers: {
@@ -200,8 +207,9 @@ const Profile = () => {
       );
       console.log("Response Data: ", response.data);
       if (response && response.data) {
-        const imageUrl = response.data.name; // Update this line according to the response structure
+        const imageUrl = response.data.imageUrl; // Update this line according to the response structure
         setImageFromBackend(imageUrl);
+        console.log("Image from backend: ", imageFromBackend);
         console.log("imageUrl from backend: " + imageUrl);
       } else {
         console.log("No user image found");

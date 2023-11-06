@@ -1,29 +1,10 @@
 const User = require("../schemas/User");
 const Image = require("../schemas/Image");
-const multer = require("multer");
 const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
-const storagePath = "/Users/boris/Documents/IOS/api/images/";
-
-const storage = multer.diskStorage({
-  destination(req, file, callback) {
-    callback(null, storagePath);
-  },
-  filename(req, file, callback) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    callback(
-      null,
-      file.fieldname +
-        "-" +
-        uniqueSuffix +
-        "." +
-        file.originalname?.split(".").pop(),
-      console.log("File originalName: " + file.originalname)
-    );
-  },
-});
-
-const upload = multer({ storage: storage });
+const path = require("path");
+const express = require("express");
+const app = express();
 
 const userController = {
   getUsers: async (req, res) => {},
@@ -43,61 +24,49 @@ const userController = {
   },
   userProfileImages: async (req, res) => {
     const userId = req.user.id;
-    upload.single("fileName")(req, res, async (err) => {
-      try {
-        if (err instanceof multer.MulterError) {
-          return res
-            .status(400)
-            .json({ success: false, message: "Error uploading file." });
-        } else if (err) {
-          return res
-            .status(500)
-            .json({ success: false, message: "Internal server error." });
-        }
-
-        // Check if file exists in the request object
-
-        const file = req.body;
-        console.log("Req.file: ", file);
-
-        // console.log("REQ: ", req);
-        console.log("req body", req.body);
-        // Check if file exists
-        if (!file) {
-          res
-            .status(400)
-            .json({ success: false, message: "No file provided." });
-          return;
-        }
-
-        const fileExtension = file.uri.split(".").pop().split("?")[0]; // Extract extension from the URI
-        const contentType = `image/${
-          fileExtension === "jpg" ? "jpeg" : fileExtension
-        }`;
-
-        const imageName = `${uuidv4()}.${fileExtension}`;
-
-        const image = new Image({
-          userId: userId,
-          name: imageName,
-          data: file.buffer,
-          contentType: contentType,
-        });
-        console.log("Saved: ", image);
-        await image.save();
-
-        res.status(201).json({
-          success: true,
-          message: "Image created successfully.",
-          imageName: imageName,
-        });
-      } catch (error) {
-        console.error("Error handling image:", error);
-        res
-          .status(500)
-          .json({ success: false, message: "Internal server error." });
+    const file = req.file;
+    try {
+      if (!file) {
+        res.status(400).json({ success: false, message: "No file provided." });
+        return;
       }
-    });
+
+      let imageSize = parseInt(req.body.size, 10);
+      if (!Number.isNaN(imageSize)) {
+        file.size = imageSize;
+      } else {
+        // Handle the case where the size couldn't be parsed correctly
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid file size." });
+      }
+      const fileExtension = file.uri?.split(".").pop().split("?")[0]; // Extract extension from the URI
+
+      const imageName = `${uuidv4()}.${fileExtension}`;
+      console.log("req.file: ", file);
+      const image = new Image({
+        userId: userId,
+        name: file.filename,
+        data: file.buffer,
+        imageUrl: file.path,
+        contentType: file.mimetype,
+        size: file.size,
+      });
+      console.log("File Buffer", file.buffer);
+      console.log("Saved: ", image);
+      // await image.save();
+
+      res.status(201).json({
+        success: true,
+        message: "Image created successfully.",
+        imageName: imageName,
+      });
+    } catch (error) {
+      console.error("Error handling image:", error);
+      res
+        .status(500)
+        .json({ success: false, message: "Internal server error." });
+    }
   },
 
   getUserProfileImage: async (req, res) => {

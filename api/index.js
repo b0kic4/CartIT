@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
-app.use("/images", express.static("api/images"));
+app.use("/api/images", express.static(path.join(__dirname, "/api/images")));
 mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
