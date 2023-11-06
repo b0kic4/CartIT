@@ -175,7 +175,7 @@ const Profile = () => {
         );
 
         console.log("Upload Reponse: ", uploadResponse.data);
-        return uploadResponse.data.imageName;
+        return uploadResponse.data;
       } else {
         throw new Error("Image URI not found");
       }

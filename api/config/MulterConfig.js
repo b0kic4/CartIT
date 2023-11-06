@@ -16,6 +16,7 @@ const storage = multer.diskStorage({
 
     console.log("File originalName: " + file.originalname);
     console.log("Generated filename: " + fileName);
+    console.log("File in multer: " + JSON.stringify(file));
 
     callback(null, fileName);
   },
@@ -23,7 +24,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 1000000 },
+  limits: { fileSize: 1000000000 },
 });
 
 module.exports = upload;

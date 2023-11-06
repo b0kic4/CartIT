@@ -30,7 +30,17 @@ const userController = {
         res.status(400).json({ success: false, message: "No file provided." });
         return;
       }
+      const filePath = `/Users/boris/Documents/IOS/api/images/${file.filename}`; // Update with the actual file path
+      fs.readFile(filePath, (err, data) => {
+        if (err) {
+          console.error("Error reading the saved file:", err);
+        } else {
+          console.log("File content:", data); // Log the file content
+          console.log("File size:", data.length); // Log the file size
+        }
+      });
 
+      console.log("Req Body: ", req.body);
       let imageSize = parseInt(req.body.size, 10);
       if (!Number.isNaN(imageSize)) {
         file.size = imageSize;
@@ -46,20 +56,26 @@ const userController = {
       console.log("req.file: ", file);
       const image = new Image({
         userId: userId,
-        name: file.filename,
-        data: file.buffer,
+        name: file.originalname,
         imageUrl: file.path,
         contentType: file.mimetype,
         size: file.size,
       });
-      console.log("File Buffer", file.buffer);
-      console.log("Saved: ", image);
-      // await image.save();
+
+      // Save the image to the database
+      await image.save();
+
+      // Read the file content after saving
+      const fileContent = fs.readFileSync(file.path);
+      console.log("File content after saving:", fileContent);
+      // CHECKING IF FILE.PATH.LENGHT
+      console.log("File size after saving:", fileContent.length);
 
       res.status(201).json({
         success: true,
         message: "Image created successfully.",
-        imageName: imageName,
+        imageName: file.originalname,
+        size: file.size,
       });
     } catch (error) {
       console.error("Error handling image:", error);
