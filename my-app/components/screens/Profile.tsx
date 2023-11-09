@@ -1,13 +1,10 @@
 import {
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   StyleSheet,
   Alert,
   Image,
-  ImageURISource,
-  ImageProps as DefaultImageProps,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useUser } from "../../context/UserContext";
@@ -15,24 +12,8 @@ import axios, { AxiosError } from "axios";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
-import RNFetchBlob from "react-native-fetch-blob";
-import {
-  ImagePickerCanceledResult,
-  ImagePickerResult,
-  ImagePickerSuccessResult,
-} from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Swiper from "react-native-swiper";
-
-type ImageSize = {
-  width: number;
-  height: number;
-};
-
-type ImageProps = DefaultImageProps & {
-  source: ImageURISource;
-};
-
 interface productItem {
   productId: number;
   title: string;
@@ -48,6 +29,8 @@ interface productItem {
 }
 
 type ImageInfo = {
+  fileName: string | null;
+  fileSize: number | null;
   uri: string | null;
   width: number | null;
   height: number | null;
@@ -57,15 +40,21 @@ type ImageInfo = {
 const Profile = () => {
   const { user } = useUser();
   const [purchasedItems, setPurchasedItems] = useState<productItem[]>([]);
-  const [showItems, setShowItems] = useState(false);
+  const [showItems, setShowItems] = useState(true);
   const [selectedImage, setSelectedImage] = useState<ImageInfo | null>(null);
   const [image, setImage] = useState<string | null>(null);
-  const [imageFromBackend, setImageFromBackend] = useState<string | null>(null);
+  const [imageFromBackend, setImageFromBackend] = useState([]);
+  const [imageUrlFromBackend, setImageUrlFromBackend] = useState<string | null>(
+    null
+  );
   const navigation = useNavigation();
+  const storedToken = AsyncStorage.getItem("token");
   const fetchUserData = async () => {
     try {
       const userId = user?.id;
-      const response = await axios.get(`http://localhost:8000/user/${userId}`);
+      const response = await axios.get(`http://localhost:8000/user/${userId}`, {
+        headers: { Authorization: `Bearer ${storedToken}` },
+      });
       setPurchasedItems(response.data.purchasedItems);
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -76,8 +65,7 @@ const Profile = () => {
     const fetchData = async () => {
       try {
         await fetchUserData();
-
-        // Check if imageFromBackend exists and is non-empty before fetching
+        await getUserImage();
       } catch (error) {
         console.log("Error fetching user data:", error);
       }
@@ -92,6 +80,19 @@ const Profile = () => {
     navigation.goBack();
   }
 
+  const convertImageAsset = (
+    imageAsset: ImagePicker.ImagePickerAsset
+  ): ImageInfo => {
+    return {
+      uri: imageAsset.uri,
+      width: imageAsset.width,
+      height: imageAsset.height,
+      type: imageAsset.type,
+      fileSize: imageAsset.fileSize || 0,
+      fileName: imageAsset.fileName || null,
+    };
+  };
+
   const pickImageAsync = async () => {
     try {
       const { status } =
@@ -100,96 +101,57 @@ const Profile = () => {
         return Alert.alert("Sorry, we need your permissions");
       }
 
-      const result: ImagePickerResult =
-        await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: false,
-          aspect: [4, 3],
-          quality: 1,
-        });
-      console.log("Result in pickImageAsync:", result);
+      const result: any = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
 
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const selectedImage = result.assets[0];
-        setSelectedImage(selectedImage); // Update the selected image state
-        console.log("Selected image:", selectedImage);
-        await postImage(selectedImage);
+      if (result.cancelled) {
+        return;
       }
+
+      const selectedAsset = result.assets[0];
+
+      setSelectedImage({
+        uri: selectedAsset.uri,
+        width: selectedAsset.width || null,
+        height: selectedAsset.height || null,
+        type: selectedAsset.type || null,
+        fileSize: selectedAsset.fileSize || null,
+        fileName: selectedAsset.filename || null,
+      });
+
+      const localUri = selectedAsset.uri;
+      const fileName = localUri.split("/").pop();
+      const formData = new FormData();
+      formData.append("file", {
+        uri: selectedAsset.uri,
+        type: "image/jpeg",
+        name: fileName || "image.jpg",
+      } as any);
+
+      await postImage(formData);
     } catch (error) {
       console.error("Error in pickImageAsync:", error);
     }
   };
 
-  const postImage = async (selectedImage: {
-    uri: string | null;
-    assetId?: string | null | undefined;
-    width?: number;
-    height?: number;
-    type?: "image" | "video" | undefined;
-    fileName?: string | null | undefined;
-    fileSize?: number | undefined;
-    exif?: Record<string, any> | null | undefined;
-    base64?: string | null | undefined;
-    duration?: number | null | undefined;
-  }) => {
+  const postImage = async (formData: FormData) => {
     try {
-      if (
-        selectedImage &&
-        selectedImage.fileSize &&
-        selectedImage.uri &&
-        selectedImage.fileName
-      ) {
-        console.log("SelectedImage filesize: ", selectedImage.fileSize);
-
-        // Assuming selectedImage.uri holds the file URI
-        const fileUri = selectedImage.uri;
-        const response = await fetch(fileUri);
-        const blob = await response.blob();
-        console.log("Blob size: ", blob.size);
-        const file = new File([blob], selectedImage.fileName);
-        console.log("File: " + JSON.stringify(file));
-        const formData = new FormData();
-        formData.append("profileImage", file);
-        console.log("Form data: " + JSON.stringify(formData));
-        const storedToken = await AsyncStorage.getItem("token");
-        console.log(blob.type);
-        const axiosConfig = {
-          headers: {
-            Authorization: `Bearer ${storedToken}`,
-            "content-type": blob && blob.type,
-            Accept: "application/json",
-          },
-          body: blob,
-        };
-
-        const uploadResponse = await axios.post(
-          "http://localhost:8000/user/images",
-          formData,
-          axiosConfig
-        );
-
-        console.log("Upload Reponse: ", uploadResponse.data);
-        return uploadResponse.data;
-      } else {
-        throw new Error("Image URI not found");
-      }
+      await axios.post("http://localhost:8000/upload", formData, {
+        headers: {
+          Authorization: `Bearer ${storedToken}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      // console.log("Upload Response:", response.data);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
-        if (axiosError.response) {
-          console.log(
-            "Error Response Status Code:",
-            axiosError.response.status
-          );
-          console.log("Error Response Data:", axiosError.response.data);
-        } else {
-          console.error("Axios request failed without a response.");
-        }
-      } else {
-        console.error("Non-Axios error:", error);
-      }
+      console.error("Error in postImage:", error);
     }
   };
+
   const getUserImage = async () => {
     try {
       const storedToken = await AsyncStorage.getItem("token");
@@ -199,12 +161,9 @@ const Profile = () => {
           headers: { Authorization: `Bearer ${storedToken}` },
         }
       );
-      console.log("Response Data: ", response.data);
+
       if (response && response.data) {
-        const imageUrl = response.data.imageUrl; // Update this line according to the response structure
-        setImageFromBackend(imageUrl);
-        console.log("Image from backend: ", imageFromBackend);
-        console.log("imageUrl from backend: " + imageUrl);
+        setImageUrlFromBackend(response.data.imageUrl);
       } else {
         console.log("No user image found");
       }
@@ -239,11 +198,11 @@ const Profile = () => {
         <View style={styles.uploadingPhotoContainer}>
           <TouchableOpacity onPress={pickImageAsync}>
             <View style={styles.uploadingPhotoContainer}>
-              {selectedImage || image ? (
+              {selectedImage || image || imageUrlFromBackend ? (
                 <>
                   <Image
                     source={{
-                      uri: selectedImage?.uri || imageFromBackend || "",
+                      uri: selectedImage?.uri || imageUrlFromBackend || "",
                     }}
                     style={{ width: 200, height: 200 }}
                   />
@@ -265,9 +224,9 @@ const Profile = () => {
         <View style={{ marginTop: 5 }}>
           <Text style={{ fontWeight: "bold", fontSize: 20 }}>
             Welcome, {user?.username}
-            {/* <TouchableOpacity onPress={getUserImage}>
+            <TouchableOpacity onPress={getUserImage}>
               <Text>Get Image</Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
           </Text>
         </View>
       </View>

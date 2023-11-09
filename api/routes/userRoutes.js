@@ -7,9 +7,9 @@ const upload = require("../config/MulterConfig"); // Check the path to MulterCon
 router.get("/user/:id", verifyToken, UserController.getSingleUser);
 
 router.post(
-  "/user/images",
-  upload.single("profileImage"),
+  "/upload",
   verifyToken,
+  upload.single("file"),
   UserController.userProfileImages
 );
 

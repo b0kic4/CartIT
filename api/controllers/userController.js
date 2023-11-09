@@ -21,8 +21,6 @@ const userController = {
   },
   userProfileImages: async (req, res) => {
     const file = req.file;
-    const userId = req.user.id;
-    console.log("Req body: ", JSON.stringify(req.body));
     try {
       if (!file) {
         return res
@@ -32,20 +30,22 @@ const userController = {
 
       const filePath = file.path;
       console.log(req.file);
-
+      const userId = req.user.id;
       // Ensure you're capturing the file size after the upload is completed
       const fileStats = fs.statSync(filePath);
       console.log("File Path: " + filePath);
       console.log("File stats:", fileStats);
+      console.log("Form Data: ", JSON.stringify(req.body));
       if (fileStats.size > 0) {
         const image = new Image({
-          userid: userId,
+          userId: userId,
           name: file.originalname,
           imageUrl: file.path,
           contentType: file.mimetype,
           size: fileStats.size,
         });
-
+        console.log("File stats size: " + fileStats.size);
+        console.log("Req file size: " + req.file.size);
         await image.save();
 
         return res.status(201).json({
