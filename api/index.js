@@ -14,13 +14,17 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 
 require("dotenv").config();
-app.use(cors());
-app.options("*", cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
-app.use("/api/images", express.static(path.join(__dirname, "/api/images")));
+app.use("api/images", express.static(path.join(__dirname, "api/images")));
+app.use(
+  cors({
+    credentials: true,
+    origin: "http://localhost:8000",
+  })
+);
 mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,

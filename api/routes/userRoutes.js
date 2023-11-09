@@ -8,7 +8,7 @@ router.get("/user/:id", verifyToken, UserController.getSingleUser);
 
 router.post(
   "/user/images",
-  upload.single("file"),
+  upload.single("profileImage"),
   verifyToken,
   UserController.userProfileImages
 );

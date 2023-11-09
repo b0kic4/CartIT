@@ -1,10 +1,7 @@
 const User = require("../schemas/User");
 const Image = require("../schemas/Image");
 const fs = require("fs");
-const { v4: uuidv4 } = require("uuid");
-const path = require("path");
-const express = require("express");
-const app = express();
+const { type } = require("os");
 
 const userController = {
   getUsers: async (req, res) => {},
@@ -23,68 +20,52 @@ const userController = {
     }
   },
   userProfileImages: async (req, res) => {
-    const userId = req.user.id;
     const file = req.file;
+    const userId = req.user.id;
+    console.log("Req body: ", JSON.stringify(req.body));
     try {
       if (!file) {
-        res.status(400).json({ success: false, message: "No file provided." });
-        return;
-      }
-      const filePath = `/Users/boris/Documents/IOS/api/images/${file.filename}`; // Update with the actual file path
-      fs.readFile(filePath, (err, data) => {
-        if (err) {
-          console.error("Error reading the saved file:", err);
-        } else {
-          console.log("File content:", data); // Log the file content
-          console.log("File size:", data.length); // Log the file size
-        }
-      });
-
-      console.log("Req Body: ", req.body);
-      let imageSize = parseInt(req.body.size, 10);
-      if (!Number.isNaN(imageSize)) {
-        file.size = imageSize;
-      } else {
-        // Handle the case where the size couldn't be parsed correctly
         return res
           .status(400)
-          .json({ success: false, message: "Invalid file size." });
+          .json({ success: false, message: "No file provided." });
       }
-      const fileExtension = file.uri?.split(".").pop().split("?")[0]; // Extract extension from the URI
 
-      const imageName = `${uuidv4()}.${fileExtension}`;
-      console.log("req.file: ", file);
-      const image = new Image({
-        userId: userId,
-        name: file.originalname,
-        imageUrl: file.path,
-        contentType: file.mimetype,
-        size: file.size,
-      });
+      const filePath = file.path;
+      console.log(req.file);
 
-      // Save the image to the database
-      await image.save();
+      // Ensure you're capturing the file size after the upload is completed
+      const fileStats = fs.statSync(filePath);
+      console.log("File Path: " + filePath);
+      console.log("File stats:", fileStats);
+      if (fileStats.size > 0) {
+        const image = new Image({
+          userid: userId,
+          name: file.originalname,
+          imageUrl: file.path,
+          contentType: file.mimetype,
+          size: fileStats.size,
+        });
 
-      // Read the file content after saving
-      const fileContent = fs.readFileSync(file.path);
-      console.log("File content after saving:", fileContent);
-      // CHECKING IF FILE.PATH.LENGHT
-      console.log("File size after saving:", fileContent.length);
+        await image.save();
 
-      res.status(201).json({
-        success: true,
-        message: "Image created successfully.",
-        imageName: file.originalname,
-        size: file.size,
-      });
+        return res.status(201).json({
+          success: true,
+          message: "Image created successfully.",
+          imageName: file.originalname,
+          size: fileStats.size,
+        });
+      } else {
+        return res
+          .status(500)
+          .json({ success: false, message: "File is empty." });
+      }
     } catch (error) {
       console.error("Error handling image:", error);
-      res
+      return res
         .status(500)
         .json({ success: false, message: "Internal server error." });
     }
   },
-
   getUserProfileImage: async (req, res) => {
     try {
       const userId = req.user.id;

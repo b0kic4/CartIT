@@ -107,7 +107,7 @@ const Profile = () => {
           aspect: [4, 3],
           quality: 1,
         });
-      // console.log("Result in pickImageAsync:", result);
+      console.log("Result in pickImageAsync:", result);
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const selectedImage = result.assets[0];
@@ -139,33 +139,27 @@ const Profile = () => {
         selectedImage.uri &&
         selectedImage.fileName
       ) {
-        const getExtensionFromUri = (uri: string) => {
-          const uriParts = uri.split(".");
-          return uriParts[uriParts.length - 1]; // Extract the file extension
-        };
+        console.log("SelectedImage filesize: ", selectedImage.fileSize);
 
         // Assuming selectedImage.uri holds the file URI
-        const imageExtension = getExtensionFromUri(selectedImage.uri);
-        const contentType = `image/${
-          imageExtension === "jpg" ? "jpeg" : imageExtension
-        }`;
         const fileUri = selectedImage.uri;
         const response = await fetch(fileUri);
         const blob = await response.blob();
-        const size = selectedImage.fileSize;
-        const file = new File([blob], selectedImage.fileName, {
-          type: contentType,
-        });
-
+        console.log("Blob size: ", blob.size);
+        const file = new File([blob], selectedImage.fileName);
+        console.log("File: " + JSON.stringify(file));
         const formData = new FormData();
-        formData.append("file", file);
-        formData.append("size", size);
+        formData.append("profileImage", file);
+        console.log("Form data: " + JSON.stringify(formData));
         const storedToken = await AsyncStorage.getItem("token");
+        console.log(blob.type);
         const axiosConfig = {
           headers: {
             Authorization: `Bearer ${storedToken}`,
-            "Content-Type": "multipart/form-data",
+            "content-type": blob && blob.type,
+            Accept: "application/json",
           },
+          body: blob,
         };
 
         const uploadResponse = await axios.post(
@@ -257,7 +251,7 @@ const Profile = () => {
                     onPress={getUserImage}
                     style={styles.uploadBtnContainer}
                   >
-                    <Text style={styles.uploadBtn}>Update</Text>
+                    <Text style={styles.uploadBtn}>Update image</Text>
                   </TouchableOpacity>
                 </>
               ) : (
@@ -271,9 +265,9 @@ const Profile = () => {
         <View style={{ marginTop: 5 }}>
           <Text style={{ fontWeight: "bold", fontSize: 20 }}>
             Welcome, {user?.username}
-            <TouchableOpacity onPress={getUserImage}>
+            {/* <TouchableOpacity onPress={getUserImage}>
               <Text>Get Image</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </Text>
         </View>
       </View>
