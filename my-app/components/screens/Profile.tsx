@@ -131,7 +131,7 @@ const Profile = () => {
         type: "image/jpeg",
         name: fileName || "image.jpg",
       } as any);
-
+      await deleteImage();
       await postImage(formData);
     } catch (error) {
       console.error("Error in pickImageAsync:", error);
@@ -151,7 +151,24 @@ const Profile = () => {
       console.error("Error in postImage:", error);
     }
   };
-
+  // Function for deleting previously uploaded image from database
+  const deleteImage = async () => {
+    try {
+      // Check if the user has an existing image to delete
+      if (imageUrlFromBackend) {
+        const storedToken = await AsyncStorage.getItem("token");
+        const response = await axios.delete(
+          `http://localhost:8000/user/profile-image-delete/${user?.id}`,
+          {
+            headers: { Authorization: `Bearer ${storedToken}` },
+          }
+        );
+        console.log("Image deleted:", response.data);
+      }
+    } catch (error) {
+      console.error("Error deleting user image:", error);
+    }
+  };
   const getUserImage = async () => {
     try {
       const storedToken = await AsyncStorage.getItem("token");
@@ -224,9 +241,6 @@ const Profile = () => {
         <View style={{ marginTop: 5 }}>
           <Text style={{ fontWeight: "bold", fontSize: 20 }}>
             Welcome, {user?.username}
-            <TouchableOpacity onPress={getUserImage}>
-              <Text>Get Image</Text>
-            </TouchableOpacity>
           </Text>
         </View>
       </View>

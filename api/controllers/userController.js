@@ -1,10 +1,10 @@
 const User = require("../schemas/User");
 const Image = require("../schemas/Image");
 const fs = require("fs");
-const { type } = require("os");
 
 const userController = {
   getUsers: async (req, res) => {},
+  // Getting user info from id
   getSingleUser: async (req, res) => {
     const userId = req.user.id;
     try {
@@ -19,6 +19,7 @@ const userController = {
       res.status(500).json({ message: "Internal server error" });
     }
   },
+  // Setting image in database
   userProfileImages: async (req, res) => {
     const file = req.file;
     try {
@@ -31,7 +32,7 @@ const userController = {
       const filePath = file.path;
       console.log(req.file);
       const userId = req.user.id;
-      // Ensure you're capturing the file size after the upload is completed
+
       const fileStats = fs.statSync(filePath);
       console.log("File Path: " + filePath);
       console.log("File stats:", fileStats);
@@ -66,6 +67,7 @@ const userController = {
         .json({ success: false, message: "Internal server error." });
     }
   },
+  // Getting the image from database
   getUserProfileImage: async (req, res) => {
     try {
       const userId = req.user.id;
@@ -84,6 +86,20 @@ const userController = {
       res
         .status(500)
         .json({ success: false, message: "Internal server error" });
+    }
+  },
+  // When user uploads new image, it will delete the old image
+  deleteImageFromDatabase: async (req, res) => {
+    const userId = req.user.id;
+    const image = await Image.findOne({ userId });
+    await image.deleteOne();
+
+    if (image) {
+      return res
+        .status(200)
+        .json({ success: true, message: "Image deleted successfully" });
+    } else {
+      return res.status(500).json({ success: false, message: "Error" });
     }
   },
 };
