@@ -18,7 +18,7 @@ import { StockProvider } from "./context/StockContext";
 import CheckOut from "./components/screens/Cart/CheckOut";
 import Payment from "./components/screens/Cart/Payment";
 import { RememberMeProvider } from "./context/RememberMeContext";
-import { ThemeProvider } from "react-native-paper";
+import { ThemeProvider } from "./context/ThemeContextProvider";
 const Stack = createNativeStackNavigator();
 
 export default function App() {

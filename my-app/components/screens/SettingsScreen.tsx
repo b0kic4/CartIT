@@ -1,38 +1,49 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, StyleSheet, Switch, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRememberMe } from "../../context/RememberMeContext";
+import { useTheme } from "../../context/ThemeContextProvider";
+import { useNavigation } from "@react-navigation/native";
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
   const { rememberMe, toggleRememberMe } = useRememberMe();
-  const [darkMode, setDarkMode] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   function goBack() {
     navigation.goBack();
   }
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
-
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={goBack}>
-          <Ionicons name="arrow-back" size={42} style={{ marginLeft: 40 }} />
+          <Ionicons
+            name="arrow-back"
+            size={42}
+            style={{ marginLeft: 40, color: theme.textColor }}
+          />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Settings</Text>
+        <Text style={[styles.headerTitle, { color: theme.textColor }]}>
+          Settings
+        </Text>
       </View>
       <View style={styles.switchContainer}>
         <View style={styles.switchItem}>
-          <Text style={{ fontSize: 20, fontWeight: "bold" }}>Remember Me</Text>
+          <Text
+            style={{ fontSize: 20, fontWeight: "bold", color: theme.textColor }}
+          >
+            Remember Me
+          </Text>
           <Switch value={rememberMe} onValueChange={toggleRememberMe} />
         </View>
         <View style={styles.switchItem}>
-          <Text style={{ fontSize: 20, fontWeight: "bold" }}>Dark Mode</Text>
-          <Switch value={darkMode} onValueChange={toggleDarkMode} />
+          <Text
+            style={{ fontSize: 20, fontWeight: "bold", color: theme.textColor }}
+          >
+            Dark Mode
+          </Text>
+          <Switch value={theme.darkMode} onValueChange={toggleTheme} />
         </View>
       </View>
     </View>
