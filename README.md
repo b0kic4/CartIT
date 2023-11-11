@@ -56,4 +56,4 @@ Make sure you have the following tools installed on your machine:
 5. Contributes:
    Contributions are welcome! Please follow these guidelines when contributing to the project. Fork the repository, make your changes, and submit a pull request.
 
-6. License:
+
