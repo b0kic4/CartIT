@@ -15,17 +15,68 @@ import {
   Alert,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { useRememberMe } from "../../context/RememberMeContext";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
-  const { user, setUser } = useUser();
+  const { rememberMe, toggleRememberMe } = useRememberMe();
+  const { setUser } = useUser();
   const navigation = useNavigation();
 
-  async function loginUser() {
-    const baseUrl = "http://localhost:8000/login";
+  useEffect(() => {
+    const loginUser = async () => {
+      const baseUrl = "http://localhost:8000/login";
+      try {
+        // Check if there are saved credentials in AsyncStorage
+        const savedCredentials = await AsyncStorage.getItem("savedCredentials");
+
+        if (savedCredentials && rememberMe) {
+          // If "Remember Me" is checked and saved credentials exist, use them to log in
+          const { savedUsername, savedPassword } = JSON.parse(savedCredentials);
+          setUsername(savedUsername);
+          setPassword(savedPassword);
+
+          const response = await axios.post(baseUrl, {
+            username: savedUsername,
+            password: savedPassword,
+          });
+
+          const userInfo = response.data;
+          await AsyncStorage.setItem("token", userInfo.token);
+          setUser(userInfo);
+
+          // Add these console.log statements for debugging
+          console.log("User information:", userInfo);
+          console.log("Remember Me:", rememberMe);
+
+          alert("Login successful");
+          navigation.goBack();
+        }
+      } catch (error: any) {
+        console.log("Error", error.message);
+      }
+    };
+
+    loginUser(); // Call the function inside useEffect
+  }, [rememberMe, setUser, navigation]);
+
+  const saveCredentials = async () => {
+    // Save user credentials in AsyncStorage
+    if (rememberMe) {
+      await AsyncStorage.setItem(
+        "savedCredentials",
+        JSON.stringify({ savedUsername: username, savedPassword: password })
+      );
+    } else {
+      // If "Remember Me" is unchecked, remove saved credentials
+      await AsyncStorage.removeItem("savedCredentials");
+    }
+  };
+
+  const handleLogin = async () => {
     try {
+      const baseUrl = "http://localhost:8000/login";
       const response = await axios.post(baseUrl, {
         username,
         password,
@@ -34,6 +85,13 @@ const Login = () => {
       const userInfo = response.data;
       await AsyncStorage.setItem("token", userInfo.token);
       setUser(userInfo);
+
+      // Save user credentials when the user logs in
+      saveCredentials();
+
+      // console.log("User information:", userInfo);
+      // console.log("Remember Me:", rememberMe);
+
       alert("Login successful");
       navigation.goBack();
     } catch (error: any) {
@@ -46,11 +104,10 @@ const Login = () => {
         Alert.alert("User not found");
         console.log(error.request);
       } else {
-        // Something happened in setting up the request that triggered an error
         console.log("Error", error.message);
       }
     }
-  }
+  };
 
   return (
     <ImageBackground
@@ -74,15 +131,12 @@ const Login = () => {
           placeholderTextColor="black"
           secureTextEntry={true}
         />
-        <TouchableOpacity style={styles.loginButton} onPress={loginUser}>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
         <View style={styles.rememberMeContainer}>
           <Text style={styles.rememberMeText}>Remember Me</Text>
-          <Switch
-            value={rememberMe}
-            onValueChange={(value) => setRememberMe(value)}
-          />
+          <Switch value={rememberMe} onValueChange={toggleRememberMe} />
         </View>
       </KeyboardAvoidingView>
       <StatusBar style="light" />

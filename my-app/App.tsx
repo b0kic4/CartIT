@@ -17,6 +17,7 @@ import { QuantityProvider } from "./context/QuantityContext";
 import { StockProvider } from "./context/StockContext";
 import CheckOut from "./components/screens/Cart/CheckOut";
 import Payment from "./components/screens/Cart/Payment";
+import { RememberMeProvider } from "./context/RememberMeContext";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -25,10 +26,12 @@ export default function App() {
       <CartProvider>
         <QuantityProvider>
           <StockProvider>
-            <NavigationContainer>
-              <Main />
-              <StatusBar style="auto" />
-            </NavigationContainer>
+            <RememberMeProvider>
+              <NavigationContainer>
+                <Main />
+                <StatusBar style="auto" />
+              </NavigationContainer>
+            </RememberMeProvider>
           </StockProvider>
         </QuantityProvider>
       </CartProvider>
@@ -53,7 +56,7 @@ function Main() {
         <Stack.Screen
           name="Home"
           component={Home}
-          options={{ headerShown: true }}
+          options={{ headerShown: false }}
         />
       )}
       <Stack.Screen name="Profile" component={Profile} />

@@ -90,7 +90,11 @@ const TabNav: React.FC = () => {
           />
         </>
       )}
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{ headerShown: false }}
+      />
     </Tab.Navigator>
   );
 };

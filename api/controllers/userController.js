@@ -30,7 +30,7 @@ const userController = {
       }
 
       const filePath = file.path;
-      console.log(req.file);
+      // console.log(req.file);
       const userId = req.user.id;
 
       const fileStats = fs.statSync(filePath);
@@ -45,8 +45,8 @@ const userController = {
           contentType: file.mimetype,
           size: fileStats.size,
         });
-        console.log("File stats size: " + fileStats.size);
-        console.log("Req file size: " + req.file.size);
+        // console.log("File stats size: " + fileStats.size);
+        // console.log("Req file size: " + req.file.size);
         await image.save();
 
         return res.status(201).json({
@@ -72,7 +72,7 @@ const userController = {
     try {
       const userId = req.user.id;
       const image = await Image.findOne({ userId });
-      console.log("Founded image: ", image);
+      // console.log("Founded image: ", image);
       if (!image) {
         return res
           .status(404)

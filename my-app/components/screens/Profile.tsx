@@ -43,7 +43,6 @@ const Profile = () => {
   const [showItems, setShowItems] = useState(true);
   const [selectedImage, setSelectedImage] = useState<ImageInfo | null>(null);
   const [image, setImage] = useState<string | null>(null);
-  const [imageFromBackend, setImageFromBackend] = useState([]);
   const [imageUrlFromBackend, setImageUrlFromBackend] = useState<string | null>(
     null
   );
