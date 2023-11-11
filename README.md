@@ -1,6 +1,6 @@
 # CartIT
 
-Welcome to CartIT! This project is a React Native application for managing and handling shopping cart functionality. CartIT allows users to browse products, add them to the cart, and proceed to checkout.
+Welcome to CartIT! This project is a React Native application for managing and handling shopping cart functionality. CartIT allows users to browse products, add them to the cart, and proceed to checkout. As well as adding Profile images and more.
 
 ## Table of Contents
 
