@@ -17,6 +17,7 @@ import { StatusBar } from "expo-status-bar";
 import { useQuantity } from "../../../context/QuantityContext";
 import { useStock } from "../../../context/StockContext";
 import { useNavigation } from "@react-navigation/native";
+import { useTheme } from "../../../context/ThemeContextProvider";
 
 interface CartItem {
   totalPrice: number;
@@ -31,8 +32,6 @@ interface CartItem {
 }
 
 const Cart: React.FC = () => {
-  const baseUrl = "http://localhost:8000/cart";
-
   const { cart, removeFromCart } = useCart();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const { quantity, setQuantity } = useQuantity();
@@ -41,13 +40,13 @@ const Cart: React.FC = () => {
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const navigation = useNavigation();
-
+  const { theme } = useTheme();
   useEffect(() => {
     const fetchCartProducts = async () => {
       try {
         const storedToken = await AsyncStorage.getItem("token");
         if (storedToken) {
-          const response = await axios.get(baseUrl, {
+          const response = await axios.get("http://localhost:8000/cart", {
             headers: {
               Authorization: `Bearer ${storedToken}`,
               "Content-Type": "application/json",
@@ -234,7 +233,7 @@ const Cart: React.FC = () => {
   };
 
   return (
-    <View style={styles.mainContainer}>
+    <View style={[styles.mainContainer, { backgroundColor: theme.background }]}>
       <StatusBar style="dark" />
       <View style={styles.headerContainer}>
         <View style={styles.headerContainerForCheckingOut}>
@@ -357,7 +356,7 @@ const styles = StyleSheet.create({
   totalPrice: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "darkred",
+    color: "red",
   },
   textForTotalProductsPosition: {
     position: "absolute",
@@ -398,7 +397,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 10,
     height: 40,
-    backgroundColor: "darkred",
     borderRadius: 10,
     paddingVertical: 10,
     justifyContent: "flex-start",
@@ -477,7 +475,7 @@ const styles = StyleSheet.create({
     alignContent: "center",
   },
   saveButtonText: {
-    color: "darkred",
+    color: "red",
     fontWeight: "bold",
     fontSize: 20,
   },

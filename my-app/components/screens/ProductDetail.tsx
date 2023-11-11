@@ -19,6 +19,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useUser } from "../../context/UserContext";
 import { useQuantity } from "../../context/QuantityContext";
 import { useStock } from "../../context/StockContext";
+import { useTheme } from "../../context/ThemeContextProvider";
 
 type Product = {
   id: number;
@@ -58,6 +59,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ route, navigation }) => {
   const { cart, addToCart } = useCart();
   const { stock, setStock } = useStock();
   const { user } = useUser();
+  const { theme } = useTheme();
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -200,14 +202,19 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ route, navigation }) => {
   }
 
   return (
-    <View style={styles.mainContainer}>
+    <View style={[styles.mainContainer, { backgroundColor: theme.background }]}>
       <View style={styles.headerContainer}>
         <TouchableOpacity>
           <Ionicons name="arrow-back" onPress={goBack} size={37} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{product.title}</Text>
       </View>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.container,
+          { backgroundColor: theme.background },
+        ]}
+      >
         {product ? (
           <>
             {product.images.map((image, index) => (
@@ -304,19 +311,23 @@ const styles = StyleSheet.create({
   productBrand: {
     fontSize: 18,
     marginBottom: 8,
+    fontWeight: "bold",
   },
   productPrice: {
     fontSize: 18,
     color: "#007bff",
     marginBottom: 8,
+    fontWeight: "bold",
   },
   productDescription: {
     fontSize: 16,
     marginBottom: 16,
+    fontWeight: "bold",
   },
   productStock: {
     fontSize: 16,
     marginBottom: 16,
+    fontWeight: "bold",
   },
   iconsContainer: {
     flexDirection: "row",

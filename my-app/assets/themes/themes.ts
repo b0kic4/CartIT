@@ -6,15 +6,15 @@ export type Theme = {
 };
 
 export const lightTheme: Theme = {
-  primary: "#3498db",
+  primary: "#F5F5F5",
   background: "#ecf0f1",
   textColor: "#2c3e50",
   darkMode: false,
 };
 
 export const darkTheme: Theme = {
-  primary: "#3498db",
+  primary: "#124466",
   background: "#2c3e50",
-  textColor: "#ecf0f1",
+  textColor: "#000000",
   darkMode: true,
 };

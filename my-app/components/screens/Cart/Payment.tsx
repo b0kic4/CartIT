@@ -12,7 +12,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useCart } from "../../../context/CartContext";
-
+import { useTheme } from "../../../context/ThemeContextProvider";
 interface paymentInfo {
   method: string;
   cardNumber: number;
@@ -48,6 +48,7 @@ const Payment = () => {
 
   // Information from CheckOut
   const route = useRoute();
+  const { theme } = useTheme();
   const { selectedProducts } = route.params as {
     selectedProducts: {
       productId: number;
@@ -126,7 +127,7 @@ const Payment = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={goBack}>
           <Ionicons name="arrow-back" size={42} style={{ marginLeft: 40 }} />
@@ -143,26 +144,30 @@ const Payment = () => {
         {showCardInput && (
           <View style={styles.cardInputContainer}>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: theme.background }]}
               placeholder="Card Number"
+              placeholderTextColor="black"
               value={cardNumber}
               onChangeText={setCardNumber}
             />
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: theme.background }]}
               placeholder="Card Holder Name"
+              placeholderTextColor="black"
               value={cardHolderName}
               onChangeText={setCardHolderName}
             />
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: theme.background }]}
               placeholder="Expiration Date"
+              placeholderTextColor="black"
               value={expirationDate}
               onChangeText={setExpirationDate}
             />
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: theme.background }]}
               placeholder="CVV"
+              placeholderTextColor="black"
               value={cvv}
               onChangeText={setCvv}
             />
@@ -170,32 +175,37 @@ const Payment = () => {
             <TextInput
               value={fullName}
               onChangeText={setFullName}
-              style={styles.input}
+              style={[styles.input, { backgroundColor: theme.background }]}
               placeholder="Full Name"
+              placeholderTextColor="black"
             />
             <TextInput
               value={birth}
               onChangeText={setBirth}
-              style={styles.input}
+              style={[styles.input, { backgroundColor: theme.background }]}
               placeholder="Birth Date"
+              placeholderTextColor="black"
             />
             <TextInput
               value={country}
               onChangeText={setCountry}
-              style={styles.input}
+              style={[styles.input, { backgroundColor: theme.background }]}
               placeholder="Country"
+              placeholderTextColor="black"
             />
             <TextInput
               value={city}
               onChangeText={setCity}
-              style={styles.input}
+              style={[styles.input, { backgroundColor: theme.background }]}
               placeholder="City"
+              placeholderTextColor="black"
             />
             <TextInput
               value={address}
               onChangeText={setAddress}
-              style={styles.input}
+              style={[styles.input, { backgroundColor: theme.background }]}
               placeholder="Address"
+              placeholderTextColor="black"
             />
           </View>
         )}
@@ -208,11 +218,31 @@ const Payment = () => {
         </TouchableOpacity>
         {showCourierInput && (
           <View style={styles.cardInputContainer}>
-            <TextInput style={styles.input} placeholder="Full Name" />
-            <TextInput style={styles.input} placeholder="Birth Date" />
-            <TextInput style={styles.input} placeholder="Country" />
-            <TextInput style={styles.input} placeholder="City" />
-            <TextInput style={styles.input} placeholder="Address" />
+            <TextInput
+              style={[styles.input, { backgroundColor: theme.background }]}
+              placeholder="Full Name"
+              placeholderTextColor="black"
+            />
+            <TextInput
+              style={[styles.input, { backgroundColor: theme.background }]}
+              placeholder="Birth Date"
+              placeholderTextColor="black"
+            />
+            <TextInput
+              style={[styles.input, { backgroundColor: theme.background }]}
+              placeholder="Country"
+              placeholderTextColor="black"
+            />
+            <TextInput
+              style={[styles.input, { backgroundColor: theme.background }]}
+              placeholder="City"
+              placeholderTextColor="black"
+            />
+            <TextInput
+              style={[styles.input, { backgroundColor: theme.background }]}
+              placeholder="Address"
+              placeholderTextColor="black"
+            />
           </View>
         )}
       </View>
@@ -282,6 +312,7 @@ const styles = StyleSheet.create({
     padding: 10,
     width: 170,
   },
+
   orderNowButtonText: {
     color: "white",
     textAlign: "center",

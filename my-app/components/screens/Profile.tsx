@@ -7,7 +7,11 @@ import {
   Image,
 } from "react-native";
 import React, { useEffect, useState } from "react";
+// Context and Assets
 import { useUser } from "../../context/UserContext";
+import { useTheme } from "../../context/ThemeContextProvider";
+import { Theme, lightTheme, darkTheme } from "../../assets/themes/themes";
+
 import axios, { AxiosError } from "axios";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -47,6 +51,7 @@ const Profile = () => {
     null
   );
   const navigation = useNavigation();
+  const { theme } = useTheme();
   const storedToken = AsyncStorage.getItem("token");
   const fetchUserData = async () => {
     try {
@@ -78,19 +83,6 @@ const Profile = () => {
   function goBack() {
     navigation.goBack();
   }
-
-  const convertImageAsset = (
-    imageAsset: ImagePicker.ImagePickerAsset
-  ): ImageInfo => {
-    return {
-      uri: imageAsset.uri,
-      width: imageAsset.width,
-      height: imageAsset.height,
-      type: imageAsset.type,
-      fileSize: imageAsset.fileSize || 0,
-      fileName: imageAsset.fileName || null,
-    };
-  };
 
   const pickImageAsync = async () => {
     try {
@@ -203,7 +195,7 @@ const Profile = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={goBack}>
           <Ionicons name="arrow-back" size={42} style={{ marginLeft: 40 }} />
@@ -243,26 +235,39 @@ const Profile = () => {
           </Text>
         </View>
       </View>
-      <View style={styles.secoundSectionMainContainer}>
+      <View
+        style={[
+          styles.secoundSectionMainContainer,
+          { backgroundColor: theme.background },
+        ]}
+      >
         <TouchableOpacity
           style={{
             justifyContent: "center",
             alignItems: "flex-start",
             marginLeft: 15,
             backgroundColor: "white",
-            width: "35%",
-            height: "5%",
+            width: 186,
             borderRadius: 10,
           }}
           onPress={togglePurchasedItems}
         >
-          <Text>Show Purchased Items</Text>
+          <Text
+            style={{
+              backgroundColor: theme.background,
+
+              fontSize: 17,
+              fontWeight: "bold",
+            }}
+          >
+            Show Purchased Items
+          </Text>
         </TouchableOpacity>
         {showItems ? (
           <Swiper
-            style={styles.wrapper} // Ensure 'styles.wrapper' has the necessary Swiper styles
+            style={styles.wrapper}
             loop={false}
-            paginationStyle={styles.paginationStyle} // Ensure this style is defined
+            paginationStyle={styles.paginationStyle}
           >
             {purchasedItems.map((item, index) => (
               <View key={index} style={styles.carouselItem}>

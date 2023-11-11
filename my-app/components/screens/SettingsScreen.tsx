@@ -21,26 +21,20 @@ const SettingsScreen = () => {
           <Ionicons
             name="arrow-back"
             size={42}
-            style={{ marginLeft: 40, color: theme.textColor }}
+            style={{ marginLeft: 40, color: "black" }}
           />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.textColor }]}>
-          Settings
-        </Text>
+        <Text style={[styles.headerTitle, { color: "black" }]}>Settings</Text>
       </View>
       <View style={styles.switchContainer}>
         <View style={styles.switchItem}>
-          <Text
-            style={{ fontSize: 20, fontWeight: "bold", color: theme.textColor }}
-          >
+          <Text style={{ fontSize: 20, fontWeight: "bold", color: "black" }}>
             Remember Me
           </Text>
           <Switch value={rememberMe} onValueChange={toggleRememberMe} />
         </View>
         <View style={styles.switchItem}>
-          <Text
-            style={{ fontSize: 20, fontWeight: "bold", color: theme.textColor }}
-          >
+          <Text style={{ fontSize: 20, fontWeight: "bold", color: "black" }}>
             Dark Mode
           </Text>
           <Switch value={theme.darkMode} onValueChange={toggleTheme} />

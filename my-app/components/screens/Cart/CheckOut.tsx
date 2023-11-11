@@ -11,6 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useCart } from "../../../context/CartContext";
+import { useTheme } from "../../../context/ThemeContextProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Swiper from "react-native-swiper";
 import { StatusBar } from "expo-status-bar";
@@ -33,7 +34,7 @@ const CheckOut = () => {
   const navigation = useNavigation();
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
-
+  const { theme } = useTheme();
   useEffect(() => {
     const fetchCartProducts = async () => {
       try {
@@ -96,8 +97,8 @@ const CheckOut = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="dark" />
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <StatusBar style="auto" />
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={goBack}>
           <Ionicons name="arrow-back" size={42} style={{ marginLeft: 40 }} />
@@ -133,7 +134,9 @@ const CheckOut = () => {
         <Text style={styles.brand}>Total Items: {totalProducts}</Text>
         <Text style={styles.brand}>Total Price: {totalPrice}$</Text>
         <TouchableOpacity onPress={goToPayment} style={styles.paymentButton}>
-          <Text style={styles.paymentButtonText}>Proceed to Payment</Text>
+          <Text style={[styles.paymentButtonText, { color: theme.textColor }]}>
+            Proceed to Payment
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
