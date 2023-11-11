@@ -18,24 +18,27 @@ import { StockProvider } from "./context/StockContext";
 import CheckOut from "./components/screens/Cart/CheckOut";
 import Payment from "./components/screens/Cart/Payment";
 import { RememberMeProvider } from "./context/RememberMeContext";
+import { ThemeProvider } from "react-native-paper";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <UserContextProvider>
-      <CartProvider>
-        <QuantityProvider>
-          <StockProvider>
-            <RememberMeProvider>
-              <NavigationContainer>
-                <Main />
-                <StatusBar style="auto" />
-              </NavigationContainer>
-            </RememberMeProvider>
-          </StockProvider>
-        </QuantityProvider>
-      </CartProvider>
-    </UserContextProvider>
+    <ThemeProvider>
+      <UserContextProvider>
+        <CartProvider>
+          <QuantityProvider>
+            <StockProvider>
+              <RememberMeProvider>
+                <NavigationContainer>
+                  <Main />
+                  <StatusBar style="auto" />
+                </NavigationContainer>
+              </RememberMeProvider>
+            </StockProvider>
+          </QuantityProvider>
+        </CartProvider>
+      </UserContextProvider>
+    </ThemeProvider>
   );
 }
 

@@ -59,7 +59,7 @@ const Login = () => {
     };
 
     loginUser(); // Call the function inside useEffect
-  }, [rememberMe, setUser, navigation]);
+  }, [setUser, navigation]);
 
   const saveCredentials = async () => {
     // Save user credentials in AsyncStorage
