@@ -7,6 +7,7 @@ import {
   Button,
   StyleSheet,
   ImageBackground,
+  Alert,
 } from "react-native";
 import axios, { AxiosError } from "axios";
 import { StatusBar } from "expo-status-bar";
@@ -18,7 +19,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  const navigate = useNavigation();
   async function registerUser() {
     if (confirmPassword !== password) {
       alert("Passwords do not match");
@@ -38,7 +39,7 @@ const Register = () => {
       if (response.status === 200) {
         console.log("Registration successful");
         console.log(response.data);
-        const navigate = useNavigation();
+        Alert.alert("Registration successful");
         navigate.navigate("Home" as never);
       } else if (response.status === 409) {
         alert("Email is already in use");
