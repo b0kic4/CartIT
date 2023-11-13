@@ -24,6 +24,7 @@ const Welcome = () => {
       resizeMode="cover"
       source={require("my-app/assets/images/joel-abraham-8RRYJg26Wr4-unsplash.jpg")}
     >
+      <StatusBar style="auto" />
       <View style={styles.positionContainer}>
         <View>
           <Text style={styles.welcomeTextStyles}>Welcome</Text>
@@ -39,7 +40,6 @@ const Welcome = () => {
           <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>
       </View>
-      <StatusBar style="light" />
     </ImageBackground>
   );
 };

@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRememberMe } from "../../context/RememberMeContext";
 import { useTheme } from "../../context/ThemeContextProvider";
 import { useNavigation } from "@react-navigation/native";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const SettingsScreen = () => {
   const navigation = useNavigation();
   const { rememberMe, toggleRememberMe } = useRememberMe();

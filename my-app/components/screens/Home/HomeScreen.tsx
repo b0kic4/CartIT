@@ -10,6 +10,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useUser } from "../../../context/UserContext";
 import { Ionicons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 const HomeScreen = () => {
@@ -73,6 +74,7 @@ const HomeScreen = () => {
       source={require("my-app/assets/images/taopaodao-EgL0EtzL0Wc-unsplash.jpg")}
       style={styles.imageStyle}
     >
+      <StatusBar style="auto" />
       <View style={styles.headerContainer}>
         <Text style={styles.usernameTextStyle}>
           <Ionicons name="person-outline" size={15} color="lightgray" />{" "}
