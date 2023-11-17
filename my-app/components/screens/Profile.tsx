@@ -286,10 +286,10 @@ const Profile = () => {
                   </Text>
                   <Text style={styles.productTitle}>Price: ${item.price}</Text>
                   <Text style={styles.productTitle}>
-                    Price: ${item.totalItems}
+                    Total Items: {item.totalItems}
                   </Text>
                   <Text style={styles.productTitle}>
-                    Price: ${item.totalPrice}
+                    Total Price: ${item.totalPrice}
                   </Text>
                 </View>
               </View>

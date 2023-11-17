@@ -16,8 +16,23 @@ import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import { useQuantity } from "../../../context/QuantityContext";
 import { useStock } from "../../../context/StockContext";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "../../../context/ThemeContextProvider";
+
+// interface paymentInfo {
+//   method: string;
+//   cardNumber: number;
+//   cardHolderName: string;
+//   expirationDate: string;
+//   cvv: number;
+// }
+// interface userInfo {
+//   fullName: string;
+//   address: string;
+//   city: string;
+//   country: string;
+//   birth: string;
+// }
 
 interface CartItem {
   totalPrice: number;
@@ -41,6 +56,12 @@ const Cart: React.FC = () => {
   const [totalPrice, setTotalPrice] = useState(0);
   const navigation = useNavigation();
   const { theme } = useTheme();
+  const route = useRoute();
+  // const { storedPaymentInfo, storedUserInfo } = route.params as {
+  //   storedPaymentInfo: paymentInfo;
+  //   storedUserInfo: userInfo;
+  // };
+
   useEffect(() => {
     const fetchCartProducts = async () => {
       try {

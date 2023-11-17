@@ -31,6 +31,9 @@ const HomeScreen = () => {
   function redirectToCart() {
     navigation.navigate("Cart" as never);
   }
+  function redirectToProfile() {
+    navigation.navigate("Profile" as never);
+  }
   useEffect(() => {
     if (user) {
       // User is logged in, fetch products
@@ -234,6 +237,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignContent: "center",
     textAlign: "center",
+  },
+  profileContainer: {
+    backgroundColor: "transparent",
+    alignContent: "center",
+    height: "40%",
+    borderRadius: 20,
+    flexDirection: "column",
+    alignItems: "center",
   },
 });
 

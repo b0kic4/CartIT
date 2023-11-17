@@ -117,12 +117,34 @@ const Payment = () => {
         }
       );
       Alert.alert("Successfully ordered.");
+      // navigation.navigate("Cart", { storedPaymentInfo });
     } catch (error) {
       console.error("Error storing information:", error);
     }
   };
 
   const handleOrderNow = () => {
+    if (!paymentMethod) {
+      Alert.alert("Please select a payment method");
+      return;
+    }
+
+    if (
+      paymentMethod === "card" &&
+      (!cardNumber || !cardHolderName || !expirationDate || !cvv)
+    ) {
+      Alert.alert("Please fill in all card details");
+      return;
+    }
+
+    if (
+      paymentMethod === "courier" &&
+      (!fullName || !address || !city || !country || !birth)
+    ) {
+      Alert.alert("Please fill in all courier details");
+      return;
+    }
+
     storingInfo();
   };
 
